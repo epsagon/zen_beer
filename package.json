@@ -1,0 +1,26 @@
+{
+  "name": "zen_beer",
+  "version": "1.0.0",
+  "description": "Zen and the art of beer fermentation observability",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/epsagon/zen_beer.git"
+  },
+  "keywords": [
+    "beer",
+    "homebrew",
+    "serverless",
+    "iot",
+    "fun"
+  ],
+  "author": "Ilya Libin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/epsagon/zen_beer/issues"
+  },
+  "homepage": "https://github.com/epsagon/zen_beer#readme"
+}
