@@ -22,8 +22,7 @@ plugins:
 provider:
   name: aws
   runtime: nodejs8.10
-
-# you can overwrite defaults here
+  profile: zen_beer
   stage: demo
   region: eu-central-1
 
@@ -46,13 +45,34 @@ functions:
       - http:
           path: datapoints
           method: post
-
+  average:
+    handler: calculations.average
+    events:
+      - stream: arn:aws:dynamodb:eu-central-1:419892788374:table/datapoints/stream/2019-02-06T14:17:52.203
 resources:
   Resources:
     usersTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: datapoints
+        AttributeDefinitions:
+          - AttributeName: beer
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+
+        KeySchema:
+          - AttributeName: beer
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    averagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: averages
         AttributeDefinitions:
           - AttributeName: beer
             AttributeType: S
