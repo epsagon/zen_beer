@@ -49,6 +49,12 @@ functions:
     handler: calculations.average
     events:
       - stream: arn:aws:dynamodb:eu-central-1:419892788374:table/datapoints/stream/2019-02-06T14:17:52.203
+  notifier:
+    handler: calculations.notifier
+    events:
+      - schedule:
+          rate: rate(1 day)
+          enabled: true
 resources:
   Resources:
     usersTable:

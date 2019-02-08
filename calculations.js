@@ -1,7 +1,7 @@
 'use strict';
 var AWS = require('aws-sdk');
 AWS.config.update({region: 'eu-central-1'});
-const INTERVAL = 1000 * 60 * 10 // 10 minutes
+const INTERVAL = 1000 * 60 * 10; // 10 minutes
 
 module.exports.average = async (event, context) => {
   let doc = event.Records[0].dynamodb.NewImage;
@@ -47,3 +47,56 @@ module.exports.average = async (event, context) => {
     body: JSON.stringify({ message: response }),
   };
 };
+
+
+module.exports.notifier = async (event, context, callback) => {
+  const db = new AWS.DynamoDB.DocumentClient();
+  var params = {
+    TableName: 'averages'
+  };
+
+  const data = await db.scan(params).promise();
+  console.log(data);
+  const lastItems = data.Items.slice(-2);
+
+  if (lastItems.length !== 2) {
+    console.log('not enough data');
+    return {};
+  }
+
+  if (lastItems[0].gravity !== lastItems[1].gravity) {
+    console.log('still fermenting');
+    return {};
+  }
+
+  const ses = new AWS.SES({region: 'us-west-2'});
+    let emailParams = {
+    Destination: {
+      ToAddresses: ['ilya@epsagon.com']
+    },
+    Message: {
+      Body: {
+        Html: {
+          Data: '<div>Fermentation for X ended</div>',
+          Charset: 'utf-8'
+        },
+        Text: {
+          Data: `
+            Fermentation for X ended
+          `,
+          Charset: 'utf-8'
+        }
+      },
+      Subject: {
+        Data: "Fermentation for X ended",
+        Charset: 'utf-8'
+      }
+    },
+    Source: 'ilya@epsagon.com',
+    ReplyToAddresses: ['ilya@epsagon.com']
+  };
+
+  data = await ses.sendEmail(emailParams).promise();
+  console.log('worked')
+  return { statusCode: 200, message: 'yoyo' }
+}
