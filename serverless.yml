@@ -12,13 +12,17 @@
 # Happy Coding!
 
 service: aws-nodejs # NOTE: update this with your service name
+custom:
+  epsagon:
+    token: f12b9a6b-c658-416d-ae79-c7e37d49b04f
+    appName: ZenBeerHamburg
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
 plugins:
   - serverless-offline
-
+  - serverless-plugin-epsagon
 provider:
   name: aws
   runtime: nodejs8.10
@@ -53,7 +57,7 @@ functions:
     handler: calculations.notifier
     events:
       - schedule:
-          rate: rate(1 day)
+          rate: rate(3 days)
           enabled: true
 resources:
   Resources:

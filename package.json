@@ -24,9 +24,11 @@
   },
   "homepage": "https://github.com/epsagon/zen_beer#readme",
   "dependencies": {
-    "aws-sdk": "^2.396.0"
+    "aws-sdk": "^2.396.0",
+    "epsagon": "^1.12.0"
   },
   "devDependencies": {
-    "serverless-offline": "^4.2.1"
+    "serverless-offline": "^4.2.1",
+    "serverless-plugin-epsagon": "^1.4.10"
   }
 }
