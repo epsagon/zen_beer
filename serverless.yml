@@ -1,0 +1,99 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: aws-nodejs # NOTE: update this with your service name
+custom:
+  epsagon:
+    token: f12b9a6b-c658-416d-ae79-c7e37d49b04f
+    appName: ZenBeerHamburg
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+plugins:
+  - serverless-offline
+  - serverless-plugin-epsagon
+provider:
+  name: aws
+  runtime: nodejs8.10
+  profile: zen_beer
+  stage: demo
+  region: eu-central-1
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource: "*"
+
+functions:
+  index:
+    handler: datapoints.index
+    events:
+      - http:
+          path: datapoints
+          method: get
+  create:
+    handler: datapoints.create
+    events:
+      - http:
+          path: datapoints
+          method: post
+  average:
+    handler: calculations.average
+    events:
+      - stream: arn:aws:dynamodb:eu-central-1:419892788374:table/datapoints/stream/2019-02-06T14:17:52.203
+  notifier:
+    handler: calculations.notifier
+    events:
+      - schedule:
+          rate: rate(3 days)
+          enabled: true
+resources:
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: datapoints
+        AttributeDefinitions:
+          - AttributeName: beer
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+
+        KeySchema:
+          - AttributeName: beer
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    averagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: averages
+        AttributeDefinitions:
+          - AttributeName: beer
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: N
+
+        KeySchema:
+          - AttributeName: beer
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
